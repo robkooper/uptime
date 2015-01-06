@@ -17,13 +17,13 @@ jQuery(document).ready(function($) {
   // update check state live
   updateCheckState(<%- JSON.stringify(check) %>);
   socket.on('CheckEvent', function() {
-    $.getJSON('/api/checks/<%= check._id %>', updateCheckState);
+    $.getJSON('<%= contextpath %>api/checks/<%= check._id %>', updateCheckState);
   });
   
   // manage pause
   $('a[name="pause"]').click(function(e) {
     var button = $(this).children();
-    $.getJSON('/api/checks/<%= check._id %>/pause', function() {
+    $.getJSON('<%= contextpath %>api/checks/<%= check._id %>/pause', function() {
       if(button.hasClass('icon-pause')) {
         button.removeClass('icon-pause');
         button.addClass('icon-play');

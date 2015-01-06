@@ -60,7 +60,7 @@
         $('head').append('<link rel="shortcut icon" type="image/x-icon" href="/dashboard/favicon' + (red ? '_red' : '') + '.ico">')
       }
       var updateCounts = function() {
-        $.getJSON('/api/checks/count', function(count) {
+        $.getJSON('<%= contextpath %>api/checks/count', function(count) {
           if (count.total > 0) {
             $('#all_up').show().children('strong').text(count.up);
           } else {

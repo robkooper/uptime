@@ -27,6 +27,11 @@ a.start();
 
 var app = module.exports = express();
 var server = http.createServer(app);
+var serverUrl = url.parse(config.url);
+var contextpath = process.env.CONTEXTPATH || serverUrl.pathname || '/';
+if (contextpath.slice(-1) != '/') {
+  contextpath = contextpath + '/';
+}
 
 app.configure(function(){
   app.use(app.router);
@@ -42,6 +47,7 @@ app.configure(function(){
     cookie: { maxAge: 60 * 60 * 1000 }
   }));
   app.set('pollerCollection', new PollerCollection());
+  app.set('contextpath', contextpath);
 });
 
 // load plugins (may add their own routes and middlewares)
@@ -63,28 +69,28 @@ app.emit('beforeFirstRoute', app, apiApp);
 
 app.configure('development', function() {
   if (config.verbose) mongoose.set('debug', true);
-  app.use(express.static(__dirname + '/public'));
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  app.use(contextpath, express.static(__dirname + '/public'));
+  app.use(contextpath, express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 app.configure('production', function() {
   var oneYear = 31557600000;
-  app.use(express.static(__dirname + '/public', { maxAge: oneYear }));
-  app.use(express.errorHandler());
+  app.use(contextpath, express.static(__dirname + '/public', { maxAge: oneYear }));
+  app.use(contextpath, express.errorHandler());
 });
 
 // Routes
 app.emit('beforeApiRoutes', app, apiApp);
-app.use('/api', apiApp);
+app.use(contextpath + 'api', apiApp);
 
 app.emit('beforeDashboardRoutes', app, dashboardApp);
-app.use('/dashboard', dashboardApp);
-app.get('/', function(req, res) {
-  res.redirect('/dashboard/events');
+app.use(contextpath + 'dashboard', dashboardApp);
+app.get(contextpath, function(req, res) {
+  res.redirect(contextpath + 'dashboard/events');
 });
 
-app.get('/favicon.ico', function(req, res) {
-  res.redirect(301, '/dashboard/favicon.ico');
+app.get(contextpath + 'favicon.ico', function(req, res) {
+  res.redirect(301, contextpath + 'dashboard/favicon.ico');
 });
 
 app.emit('afterLastRoute', app);
@@ -141,7 +147,6 @@ module.exports = app;
 var monitorInstance;
 
 if (!module.parent) {
-  var serverUrl = url.parse(config.url);
   var port;
   if (config.server && config.server.port) {
     console.error('Warning: The server port setting is deprecated, please use the url setting instead');
@@ -155,7 +160,7 @@ if (!module.parent) {
   var port = process.env.PORT || port;
   var host = process.env.HOST || serverUrl.hostname;
   server.listen(port, function(){
-    console.log("Express server listening on host %s, port %d in %s mode", host, port, app.settings.env);
+    console.log("Express server listening on host %s, port %d, path %s in %s mode", host, port, contextpath, app.settings.env);
   });
   server.on('error', function(e) {
     if (monitorInstance) {

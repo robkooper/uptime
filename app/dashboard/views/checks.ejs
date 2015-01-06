@@ -86,7 +86,7 @@ jQuery(document).ready(function($) {
     if (checks) {
       updateChecksSection(checks);
     } else {
-      $.getJSON('/api/checks', updateChecksSection);
+      $.getJSON('<%= contextpath %>api/checks', updateChecksSection);
     }
   }
   updateChecks(<%- JSON.stringify(checks) %>);

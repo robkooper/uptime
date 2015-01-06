@@ -57,18 +57,18 @@ app.locals({
 // Routes
 
 app.get('/events', function(req, res) {
-  res.render('events');
+  res.render('events', { contextpath: app.get('contextpath') });
 });
 
 app.get('/checks', function(req, res, next) {
   Check.find().sort({ isUp: 1, lastChanged: -1 }).exec(function(err, checks) {
     if (err) return next(err);
-    res.render('checks', { info: req.flash('info'), checks: checks });
+    res.render('checks', { info: req.flash('info'), checks: checks, contextpath: app.get('contextpath') });
   });
 });
 
 app.get('/checks/new', function(req, res) {
-  res.render('check_new', { check: new Check(), pollerCollection: app.get('pollerCollection'), info: req.flash('info') });
+  res.render('check_new', { check: new Check(), pollerCollection: app.get('pollerCollection'), contextpath: app.get('contextpath'), info: req.flash('info') });
 });
 
 app.post('/checks', function(req, res, next) {
@@ -91,7 +91,7 @@ app.get('/checks/:id', function(req, res, next) {
   Check.findOne({ _id: req.params.id }, function(err, check) {
     if (err) return next(err);
     if (!check) return res.send(404, 'failed to load check ' + req.params.id);
-    res.render('check', { check: check, info: req.flash('info'), req: req });
+    res.render('check', { check: check, contextpath: app.get('contextpath'), info: req.flash('info'), req: req });
   });
 });
 
@@ -101,7 +101,7 @@ app.get('/checks/:id/edit', function(req, res, next) {
     if (!check) return res.send(404, 'failed to load check ' + req.params.id);
     var pollerDetails = [];
     app.emit('checkEdit', check.type, check, pollerDetails);
-    res.render('check_edit', { check: check, pollerCollection: app.get('pollerCollection'), pollerDetails: pollerDetails.join(''), info: req.flash('info'), req: req });
+    res.render('check_edit', { check: check, pollerCollection: app.get('pollerCollection'), pollerDetails: pollerDetails.join(''), contextpath: app.get('contextpath'), info: req.flash('info'), req: req });
   });
 });
 
@@ -150,7 +150,7 @@ app.delete('/checks/:id', function(req, res, next) {
 app.get('/tags', function(req, res, next) {
   Tag.find().sort({ name: 1 }).exec(function(err, tags) {
     if (err) return next(err);
-    res.render('tags', { tags: tags });
+    res.render('tags', { tags: tags, contextpath: app.get('contextpath') });
   });
 });
 
@@ -160,7 +160,7 @@ app.get('/tags/:name', function(req, res, next) {
       return next(err);
     }
     if (!tag) return next(new Error('failed to load tag ' + req.params.name));
-    res.render('tag', { tag: tag, req: req });
+    res.render('tag', { tag: tag, contextpath: app.get('contextpath'), req: req });
   });
 });
 
