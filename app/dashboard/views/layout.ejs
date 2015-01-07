@@ -11,9 +11,9 @@
     <link rel="apple-touch-icon" sizes="114x114" href="<%= route %>/apple-touch-icon-iphone4.png">
     <%- renderCssTags(addedCss) %>
     <script src="<%= route %>/javascripts/jquery.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="<%= contextpath %>socket.io/socket.io.js"></script>
     <script>
-    var socket = io.connect(location.protocol + '//' + location.hostname);
+    var socket = io.connect(location.protocol + '//' + location.hostname, { resource: '<%= contextpath.slice(1) %>socket.io' });
     </script>
     <script src="<%= route %>/javascripts/moment.min.js"></script>
     <!--[if lt IE 9]>

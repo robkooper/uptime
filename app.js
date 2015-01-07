@@ -96,7 +96,7 @@ app.get(contextpath + 'favicon.ico', function(req, res) {
 app.emit('afterLastRoute', app);
 
 // Sockets
-var io = socketIo.listen(server);
+var io = socketIo.listen(server, { resource: contextpath + 'socket.io' });
 
 io.configure('production', function() {
   io.enable('browser client etag');
