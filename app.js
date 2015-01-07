@@ -101,10 +101,12 @@ var io = socketIo.listen(server, { resource: contextpath + 'socket.io' });
 io.configure('production', function() {
   io.enable('browser client etag');
   io.set('log level', 1);
+  io.set("transports", ["xhr-polling"]);
 });
 
 io.configure('development', function() {
   if (!config.verbose) io.set('log level', 1);
+  io.set("transports", ["xhr-polling"]);
 });
 
 CheckEvent.on('afterInsert', function(event) {
